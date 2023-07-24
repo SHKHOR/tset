@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://ddqn284rddt5y"]
+[gd_scene load_steps=41 format=3 uid="uid://ddqn284rddt5y"]
 
 [ext_resource type="Script" path="res://Mage.gd" id="1_7db85"]
 [ext_resource type="Texture2D" uid="uid://cn711gc1x77av" path="res://melee_attack.png" id="2_r7o63"]
@@ -7,6 +7,10 @@
 [ext_resource type="Texture2D" uid="uid://bme5yo8ry44t7" path="res://Walking.png" id="5_7krmd"]
 [ext_resource type="Texture2D" uid="uid://c30y1gwlrvjf7" path="res://Sprute.png" id="6_ryr5f"]
 [ext_resource type="PackedScene" uid="uid://c2p211sdya2lm" path="res://test_enemy.tscn" id="7_7t345"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nuo0o"]
+atlas = ExtResource("3_s4nri")
+region = Rect2(0, 0, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fc3g8"]
 atlas = ExtResource("2_r7o63")
@@ -110,7 +114,10 @@ region = Rect2(384, 0, 64, 64)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_6t4hi"]
 animations = [{
-"frames": [],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nuo0o")
+}],
 "loop": true,
 "name": &"Attack End Animation",
 "speed": 5.0

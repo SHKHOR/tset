@@ -1,5 +1,5 @@
 extends CharacterBody2D
-
+var frame = 0
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true
 @export var health : float = 10000
@@ -53,11 +53,10 @@ func _physics_process(delta):
 			global.player_current_attack = true
 			print_debug("attack")
 			attack()
-#			attack_end()
+#			
 			global.player_current_attack = false
-			
-	else:
-		animation_locked = false
+	
+
 	move_and_slide()
 	update_animation()
 	update_facing_direction()
@@ -115,17 +114,24 @@ func attack():
 	
 		animated_sprite.play("Attack Start Animation")
 		animation_locked = true
+		if animated_sprite.frame_changed:
+			frame += 1
+			if frame == 6:
+				attack_end()
+			
+			
 		
-		attack_end()
 		
 func attack_end():
+		
+		animated_sprite.play("Attack Start Animation",false)
+		
 		animation_locked = false
-#		$damage_dealing_cooldown.start()
-		global.player_current_attack = false
-#		print_debug("attack")
-	
-#		attack_in_progress = true
 
+		global.player_current_attack = false
+		print_debug("attack")
+#		attack_in_progress = true
+		
 
 
 func _on_damage_dealing_cooldown_timeout():
