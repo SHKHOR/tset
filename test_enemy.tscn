@@ -241,8 +241,8 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_wcnxm"]
 radius = 46.0109
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_uyixg"]
-size = Vector2(20, 33)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nsc3y"]
+size = Vector2(22, 36)
 
 [node name="Test_enemy" type="CharacterBody2D"]
 script = ExtResource("1_78ybf")
@@ -259,8 +259,7 @@ frame_progress = 0.247792
 shape = SubResource("CircleShape2D_wcnxm")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -0.5)
-shape = SubResource("RectangleShape2D_uyixg")
+shape = SubResource("RectangleShape2D_nsc3y")
 
 [connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]
