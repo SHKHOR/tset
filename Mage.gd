@@ -10,7 +10,9 @@ var player_alive = true
 @export var nSPEED : float = 300.0
 @export var JUMP_VELOCITY : float = -250
 
+@export var friction: float = 10
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
+@onready var dash_cooldown = $Dash_Cooldown
 
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -18,6 +20,8 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var animation_locked : bool = false
 var direction :Vector2 = Vector2.ZERO
 var was_in_air : bool = false
+var can_dash = true
+
 
 func _physics_process(delta):
 	
@@ -48,22 +52,19 @@ func _physics_process(delta):
 	else:
 		velocity.x = move_toward(velocity.x, 0, nSPEED)
 #	Handle Attack
-	if Input.is_action_just_pressed("attack"):	
-	
-			global.player_current_attack = true
-			print_debug("attack")
-			attack()
-#			
-			global.player_current_attack = false
-	
-
+	if Input.is_action_just_pressed("Dash") and can_dash :
+		
+		var mouse_direction = get_local_mouse_position().normalized()
+		velocity = Vector2(1500 * mouse_direction.x, 500 * mouse_direction.y)
+		can_dash = false
+		await get_tree().create_timer(1).timeout
+		can_dash  = true
 	move_and_slide()
 	update_animation()
 	update_facing_direction()
 	
 func update_animation():
-	if not animation_locked and not(animated_sprite.animation == "Attack Start Animation"):
-		if global.player_current_attack == false:
+	
 			if direction.x != 0:
 				animated_sprite.play("Walking Animation")
 			else:
@@ -110,34 +111,7 @@ func enemy_attack():
 func _on_attack_cooldown_timeout():
 	enemy_attack_cooldown = true
 
-func attack():
 	
-		animated_sprite.play("Attack Start Animation")
-		animation_locked = true
-		if animated_sprite.frame_changed:
-			frame += 1
-			if frame == 6:
-				attack_end()
-			
-			
-		
-		
-func attack_end():
-		
-		animated_sprite.play("Attack Start Animation",false)
-		
-		animation_locked = false
-
-		global.player_current_attack = false
-		print_debug("attack")
-#		attack_in_progress = true
-		
+	
 
 
-func _on_damage_dealing_cooldown_timeout():
-	if (animated_sprite.animation == "Attack Start Animation"):
-		$damage_dealing_cooldown.start()
-	else:
-		$damage_dealing_cooldown.stop()
-		global.player_current_attack = false
-#	attack_in_progress = false
