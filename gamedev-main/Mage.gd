@@ -1,5 +1,5 @@
 extends CharacterBody2D
-
+var frame = 0
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true
 @export var health : float = 10000
@@ -10,7 +10,9 @@ var player_alive = true
 @export var nSPEED : float = 300.0
 @export var JUMP_VELOCITY : float = -250
 
+@export var friction: float = 10
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
+@onready var dash_cooldown = $Dash_Cooldown
 
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -18,15 +20,17 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var animation_locked : bool = false
 var direction :Vector2 = Vector2.ZERO
 var was_in_air : bool = false
+var can_dash = true
+
 
 func _physics_process(delta):
-	
-	enemy_attack()
-	if health <= 0:
-		player_alive = false
-		health = 0
-		print("player has died")
-		self.queue_free()
+#
+#	enemy_attack()
+#	if health <= 0:
+#		player_alive = false
+#		health = 0
+#		print("player has died")
+#		self.queue_free()
 
 	# Add the gravity.
 	if not is_on_floor():
@@ -48,23 +52,19 @@ func _physics_process(delta):
 	else:
 		velocity.x = move_toward(velocity.x, 0, nSPEED)
 #	Handle Attack
-	if Input.is_action_just_pressed("attack"):	
-	
-			global.player_current_attack = true
-			print_debug("attack")
-			attack()
-#			attack_end()
-			global.player_current_attack = false
-			
-	else:
-		animation_locked = false
+	if Input.is_action_just_pressed("Dash") and can_dash :
+		
+		var mouse_direction = get_local_mouse_position().normalized()
+		velocity = Vector2(1500 * mouse_direction.x, 500 * mouse_direction.y)
+		can_dash = false
+		await get_tree().create_timer(1).timeout
+		can_dash  = true
 	move_and_slide()
 	update_animation()
 	update_facing_direction()
 	
 func update_animation():
-	while not animation_locked and not(animated_sprite.animation == "Attack Start Animation"):
-		while global.player_current_attack == false:
+	if not animation_locked:
 			if direction.x != 0:
 				animated_sprite.play("Walking Animation")
 			else:
@@ -92,46 +92,30 @@ func _on_animated_sprite_2d_animation_finished():
 		animation_locked = false
 func player():
 	pass
+#
+#func _on_player_hitbox_body_entered(body):
+#	if body.has_method("enemy"):
+#		enemy_in_attack_range = true
+#
+#func _on_player_hitbox_body_exited(body):
+#	if body.has_method("enemy"):
+#		enemy_in_attack_range = false
+#
+#func enemy_attack():
+#	if enemy_in_attack_range and enemy_attack_cooldown == true:
+#		health = health - 10
+#		enemy_attack_cooldown = false
+#		$attack_cooldown.start()
+#		print(health)
+#
+#func _on_attack_cooldown_timeout():
+#	enemy_attack_cooldown = true
 
-func _on_player_hitbox_body_entered(body):
-	if body.has_method("enemy"):
-		enemy_in_attack_range = true
-
-func _on_player_hitbox_body_exited(body):
-	if body.has_method("enemy"):
-		enemy_in_attack_range = false
-
-func enemy_attack():
-	if enemy_in_attack_range and enemy_attack_cooldown == true:
-		health = health - 10
-		enemy_attack_cooldown = false
-		$attack_cooldown.start()
-		print(health)
-
-func _on_attack_cooldown_timeout():
-	enemy_attack_cooldown = true
-
-func attack():
 	
-		animated_sprite.play("Attack Start Animation")
-		animation_locked = true
-		
-		attack_end()
-		
-func attack_end():
-		animation_locked = false
-#		$damage_dealing_cooldown.start()
-		global.player_current_attack = false
-#		print_debug("attack")
 	
-#		attack_in_progress = true
+
+	
 
 
 
-func _on_damage_dealing_cooldown_timeout():
-	if (animated_sprite.animation == "Attack Start Animation"):
-		$damage_dealing_cooldown.start()
-	else:
-		$damage_dealing_cooldown.stop()
-		global.player_current_attack = false
-#	attack_in_progress = false
+	

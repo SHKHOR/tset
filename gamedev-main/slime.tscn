@@ -1,0 +1,124 @@
+[gd_scene load_steps=11 format=3 uid="uid://1g5huliffk6j"]
+
+[ext_resource type="Texture2D" uid="uid://mev8pb1dfy27" path="res://slime-removebg-preview.png" id="1_tsekb"]
+
+[sub_resource type="GDScript" id="GDScript_wc0x6"]
+script/source = "extends CharacterBody2D
+
+
+const SPEED = 100.0
+
+const GRAVITY = 1000
+const HEALTH = 100  # Set the enemy's initial health value
+
+var direction: Vector2 = Vector2.ZERO
+var health = HEALTH
+
+
+# Get the gravity from the project settings to be synced with RigidBody nodes.
+var gravity = ProjectSettings.get_setting(\"physics/2d/default_gravity\")
+
+
+
+
+
+
+func _physics_process(delta):
+	# Apply gravity
+	velocity.y += GRAVITY * delta
+
+	# Update the enemy's movement
+	move_enemy()
+
+	# Move the enemy
+	move_and_slide()
+
+func move_enemy():
+	# Implement the enemy's movement logic here.
+	# For simplicity, we'll just make the enemy move back and forth horizontally.
+	# You can replace this with your own logic.
+	if is_on_wall():
+		velocity.x *= -1
+	else:
+		velocity.x *= 1
+
+func take_damage(damage_amount):
+	# Reduce the enemy's health when it takes damage
+	health -= damage_amount
+
+	# Check if the enemy has been defeated
+	if health <= 0:
+		enemy_defeated()
+
+func enemy_defeated():
+	# Implement what happens when the enemy is defeated (e.g., play death animation, drop loot, etc.)
+	queue_free()  # Destroy the enemy instance
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0id4t"]
+atlas = ExtResource("1_tsekb")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a34iw"]
+atlas = ExtResource("1_tsekb")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3xxyi"]
+atlas = ExtResource("1_tsekb")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2ai13"]
+atlas = ExtResource("1_tsekb")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jxjqg"]
+atlas = ExtResource("1_tsekb")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_oxyna"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0id4t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a34iw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3xxyi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2ai13")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jxjqg")
+}],
+"loop": true,
+"name": &"walking",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5huhc"]
+radius = 35.0143
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2onk1"]
+size = Vector2(36, 34)
+
+[node name="Slime" type="CharacterBody2D"]
+script = SubResource("GDScript_wc0x6")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_oxyna")
+animation = &"walking"
+frame_progress = 0.771237
+
+[node name="Areakill" type="Area2D" parent="."]
+position = Vector2(81, -26)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Areakill"]
+position = Vector2(-81, 33)
+shape = SubResource("CircleShape2D_5huhc")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+position = Vector2(0, 7)
+shape = SubResource("RectangleShape2D_2onk1")
